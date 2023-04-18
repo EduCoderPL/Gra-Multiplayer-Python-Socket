@@ -1,17 +1,9 @@
+import pickle
 import socket
 from _thread import *
 import sys
 
-def read_pos(text):
-    text = text.split(",")
-    return int(text[0]), int(text[1])
-
-
-def make_pos(tup):
-    return str(tup[0]) + "," + str(tup[1])
-
-
-
+from player import Player
 
 server = "192.168.0.193"
 port = 5555
@@ -30,20 +22,19 @@ except socket.error as e:
 s.listen(2)
 print("Waiting for a connection, server Started")
 
-pos = [(0,0),(100,100)]
+players = [Player(0,0,50,50,(255,0,0)), Player(100,100, 50,50, (0,0,255))]
 
 
 # Definicja funkcji obsługującej klienta
 def threaded_client(conn, player):
     # Wysłanie informacji o nawiązaniu połączenia z klientem
-    conn.send(str.encode(make_pos(pos[player])))
+    conn.send(pickle.dumps(players[player]))
     reply = ""
     while True:
         try:
             # Odczytanie danych od klienta
-            data = read_pos(conn.recv(2048).decode())
-            # Dekodowanie danych do formatu utf-8
-            pos[player] = data
+            data = pickle.loads(conn.recv(2048))
+            players[player] = data
 
             # Sprawdzenie, czy odebrano jakieś dane
             if not data:
@@ -51,16 +42,16 @@ def threaded_client(conn, player):
                 break
             else:
                 if player == 1:
-                    reply = pos[0]
+                    reply = players[0]
                 else:
-                    reply = pos[1]
+                    reply = players[1]
 
                 # Wyświetlenie otrzymanych danych
                 print(f"Received: {reply}")
                 # Przesłanie tych samych danych z powrotem do klienta
                 print(f"Sending: {reply}")
 
-            conn.sendall(str.encode(make_pos(reply)))
+            conn.sendall(pickle.dumps(reply))
         except:
             break
     # Wyświetlenie komunikatu o utraceniu połączenia z klientem i zamknięcie połączenia
