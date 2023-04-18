@@ -44,9 +44,9 @@ def make_pos(tup):
 
 
 
-def redraw_window(player, p2):
+def redraw_window(p, p2):
     screen.fill((0, 0, 0))
-    player.draw(screen)
+    p.draw(screen)
     p2.draw(screen)
     pygame.display.update()
     clock.tick(60)

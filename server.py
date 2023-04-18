@@ -13,7 +13,7 @@ def make_pos(tup):
 
 
 
-server = "192.168.0.193"
+server = "192.168.1.88"
 port = 5555
 
 # Tworzenie gniazda sieciowego (socket) z rodzajem AF_INET (IPv4) i typem SOCK_STREAM (TCP)
@@ -27,33 +27,35 @@ except socket.error as e:
     str(e)
 
 # Nasłuchiwanie połączeń przychodzących z maksymalnie 2 klientami
-s.listen(2)
+s.listen(10)
 print("Waiting for a connection, server Started")
 
-pos = [(0,0),(100,100)]
+positions = [(0, 0), (100, 100)]
 
 
 # Definicja funkcji obsługującej klienta
-def threaded_client(conn, player):
+def threaded_client(conn, playerNum):
     # Wysłanie informacji o nawiązaniu połączenia z klientem
-    conn.send(str.encode(make_pos(pos[player])))
+    conn.send(str.encode(make_pos(positions[playerNum])))
+
+    print(str.encode(make_pos(positions[playerNum])))
     reply = ""
     while True:
         try:
             # Odczytanie danych od klienta
             data = read_pos(conn.recv(2048).decode())
             # Dekodowanie danych do formatu utf-8
-            pos[player] = data
+            positions[playerNum] = data
 
             # Sprawdzenie, czy odebrano jakieś dane
             if not data:
                 print("Disconnected")
                 break
             else:
-                if player == 1:
-                    reply = pos[0]
+                if playerNum == 1:
+                    reply = positions[0]
                 else:
-                    reply = pos[1]
+                    reply = positions[1]
 
                 # Wyświetlenie otrzymanych danych
                 print(f"Received: {reply}")
