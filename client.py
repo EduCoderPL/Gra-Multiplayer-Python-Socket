@@ -12,10 +12,10 @@ pygame.display.set_caption("Client")
 
 
 
-def redraw_window(player, p2):
+def redraw_window(players, current_player):
     screen.fill((0, 0, 0))
-    player.draw(screen)
-    p2.draw(screen)
+    for player in players:
+        player.draw(screen)
     pygame.display.update()
     clock.tick(60)
 
@@ -23,8 +23,15 @@ def redraw_window(player, p2):
 def main():
     run = True
     n = Network()
+    current_player = n.get_player()
+
+    all_players = [current_player]
     p = n.get_player()
 
+    while len(all_players) < 10:
+        p = n.get_player()
+        if p:
+            all_players.append(p)
 
     while run:
 
@@ -43,11 +50,13 @@ def main():
         if keys[K_d]:
             p.move(2, 0)
 
-        p.update()
-        p2 = n.send(p)
+        current_player.update()
+        all_players = n.send(current_player)
+
+        redraw_window(all_players, current_player)
 
 
-        redraw_window(p, p2)
+        redraw_window(all_players, current_player)
 
 if __name__ == "__main__":
     main()

@@ -19,10 +19,10 @@ except socket.error as e:
     str(e)
 
 # Nasłuchiwanie połączeń przychodzących z maksymalnie 2 klientami
-s.listen(2)
+s.listen(10)
 print("Waiting for a connection, server Started")
 
-players = [Player(0,0,50,50,(255,0,0)), Player(100,100, 50,50, (0,0,255))]
+players = []
 
 
 # Definicja funkcji obsługującej klienta
@@ -41,10 +41,7 @@ def threaded_client(conn, player):
                 print("Disconnected")
                 break
             else:
-                if player == 1:
-                    reply = players[0]
-                else:
-                    reply = players[1]
+                reply = players
 
                 # Wyświetlenie otrzymanych danych
                 print(f"Received: {reply}")
@@ -57,13 +54,16 @@ def threaded_client(conn, player):
     # Wyświetlenie komunikatu o utraceniu połączenia z klientem i zamknięcie połączenia
 
     print("Lost connection")
-    conn.close()
+    try:
+        players.remove(conn)
+    except:
+        conn.close()
 
 currentPlayer = 0
 # Nieskończona pętla while, w której serwer przyjmuje nowych klientów i tworzy dla nich nowe wątki
 while True:
     conn, addr = s.accept()
     print(f"Connected to: {addr}.")
-
+    players.append(Player(0, 60 * currentPlayer, 50, 50, (255, 10 * currentPlayer, 0)))
     start_new_thread(threaded_client, (conn, currentPlayer))
     currentPlayer += 1
