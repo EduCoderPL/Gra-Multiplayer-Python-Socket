@@ -2,6 +2,17 @@ import socket
 from _thread import *
 import sys
 
+def read_pos(text):
+    text = text.split(",")
+    return int(text[0]), int(text[1])
+
+
+def make_pos(tup):
+    return str(tup[0]) + "," + str(tup[1])
+
+
+
+
 server = "192.168.0.193"
 port = 5555
 
@@ -19,30 +30,37 @@ except socket.error as e:
 s.listen(2)
 print("Waiting for a connection, server Started")
 
+pos = [(0,0),(100,100)]
+
 
 # Definicja funkcji obsługującej klienta
-def threaded_client(conn):
+def threaded_client(conn, player):
     # Wysłanie informacji o nawiązaniu połączenia z klientem
-    conn.send(str.encode("Connected"))
+    conn.send(str.encode(make_pos(pos[player])))
     reply = ""
     while True:
         try:
             # Odczytanie danych od klienta
-            data = conn.recv(2048)
+            data = read_pos(conn.recv(2048).decode())
             # Dekodowanie danych do formatu utf-8
-            reply = data.decode("utf-8")
+            pos[player] = data
 
             # Sprawdzenie, czy odebrano jakieś dane
             if not data:
                 print("Disconnected")
                 break
             else:
+                if player == 1:
+                    reply = pos[0]
+                else:
+                    reply = pos[1]
+
                 # Wyświetlenie otrzymanych danych
                 print(f"Received: {reply}")
                 # Przesłanie tych samych danych z powrotem do klienta
                 print(f"Sending: {reply}")
 
-            conn.sendall(str.encode(reply))
+            conn.sendall(str.encode(make_pos(reply)))
         except:
             break
     # Wyświetlenie komunikatu o utraceniu połączenia z klientem i zamknięcie połączenia
@@ -50,10 +68,11 @@ def threaded_client(conn):
     print("Lost connection")
     conn.close()
 
-
+currentPlayer = 0
 # Nieskończona pętla while, w której serwer przyjmuje nowych klientów i tworzy dla nich nowe wątki
 while True:
     conn, addr = s.accept()
     print(f"Connected to: {addr}.")
 
-    start_new_thread(threaded_client, (conn,))
+    start_new_thread(threaded_client, (conn, currentPlayer))
+    currentPlayer += 1
