@@ -12,8 +12,16 @@ class Player:
         self.color = color
 
         self.rect = Rect(self.x, self.y, self.width, self.height)
+        self.velY = 0
 
     def update(self):
+        self.velY += 0.5
+        self.y += self.velY
+
+        if self.y > 600 - self.height:
+            self.y = 600 - self.height
+            self.velY *= -1
+
         self.rect = Rect(self.x, self.y, self.width, self.height)
 
     def draw(self, screen):
