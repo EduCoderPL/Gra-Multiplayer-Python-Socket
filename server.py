@@ -12,7 +12,7 @@ def make_pos(tup):
 
 
 
-
+#
 server = "192.168.1.88"
 port = 5555
 

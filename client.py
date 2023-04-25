@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from pygame.constants import *
-
+#
 from network import Network
 
 WIDTH = 800

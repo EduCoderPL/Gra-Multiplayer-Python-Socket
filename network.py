@@ -1,5 +1,5 @@
 import socket
-
+#
 class Network:
     def __init__(self):
         # Tworzenie gniazda sieciowego (socket) z rodzajem AF_INET (IPv4) i typem SOCK_STREAM (TCP)
