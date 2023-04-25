@@ -1,11 +1,10 @@
 import pickle
 import socket
 from _thread import *
-import sys
 
 from player import Player
 
-server = "192.168.0.193"
+server = "192.168.1.88"
 port = 5555
 
 # Tworzenie gniazda sieciowego (socket) z rodzajem AF_INET (IPv4) i typem SOCK_STREAM (TCP)
@@ -26,22 +25,22 @@ players = [Player(0,0,50,50,(255,0,0)), Player(100,100, 50,50, (0,0,255))]
 
 
 # Definicja funkcji obsługującej klienta
-def threaded_client(conn, player):
-    # Wysłanie informacji o nawiązaniu połączenia z klientem
-    conn.send(pickle.dumps(players[player]))
+def threaded_client(conn, playerNumber):
+
+    conn.send(pickle.dumps(players[playerNumber]))
     reply = ""
     while True:
         try:
             # Odczytanie danych od klienta
             data = pickle.loads(conn.recv(2048))
-            players[player] = data
+            players[playerNumber] = data
 
             # Sprawdzenie, czy odebrano jakieś dane
             if not data:
                 print("Disconnected")
                 break
             else:
-                if player == 1:
+                if playerNumber == 1:
                     reply = players[0]
                 else:
                     reply = players[1]
