@@ -3,16 +3,15 @@ import socket
 from _thread import *
 
 from player import Player
+from constants import *
 
-server = "192.168.1.88"
-port = 5555
 
 # Tworzenie gniazda sieciowego (socket) z rodzajem AF_INET (IPv4) i typem SOCK_STREAM (TCP)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Próba powiązania gniazda z adresem IP serwera i portem
 try:
-    s.bind((server, port))
+    s.bind((SERVER, PORT))
 
 except socket.error as e:
     str(e)
