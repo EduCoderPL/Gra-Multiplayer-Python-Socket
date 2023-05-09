@@ -27,7 +27,7 @@ try:
 except socket.error as e:
     str(e)
 
-# Nasłuchiwanie połączeń przychodzących z maksymalnie 2 klientami
+# Nasłuchiwanie połączeń przychodzących z maksymalnie 10 klientami
 s.listen(10)
 print("Waiting for a connection, server Started")
 
@@ -42,9 +42,9 @@ for i in range(10):
     pickups.append(new_pickup)
 
 # Definicja funkcji obsługującej klienta
-def threaded_client(conn, player):
+def threaded_client(conn, player_number):
     # Wysłanie informacji o nawiązaniu połączenia z klientem
-    conn.send(pickle.dumps(players[player]))
+    conn.send(pickle.dumps(players[player_number]))
 
     reply = ""
     while True:
@@ -57,15 +57,15 @@ def threaded_client(conn, player):
 
         # print(player)
         # print(players[player])
-        try:
-            check_pickups(players[player], pickups)
-        except Exception as e:
-            print(e)
+        # try:
+        #     check_pickups(players[player], pickups)
+        # except Exception as e:
+        #     print(e)
 
         try:
             # Odczytanie danych od klienta
             data = pickle.loads(conn.recv(2048))
-            players[player] = data
+            players[player_number] = data
 
             # Sprawdzenie, czy odebrano jakieś dane
             if not data:
@@ -88,7 +88,7 @@ def threaded_client(conn, player):
 
     print("Lost connection")
     try:
-        players.remove(conn)
+        players.pop(player_number)
     except:
         conn.close()
 
@@ -99,7 +99,8 @@ while True:
     print(f"Connected to: {addr}.")
 
     # Dodanie nowego gracza do puli
-    players.append(Player(0, 60 * currentPlayer, 50, 50, (255, 10 * currentPlayer, 0)))
+    randColor = (random.randint(50, 255), random.randint(50, 255), random.randint(50, 255))
+    players.append(Player(0, 60 * currentPlayer, 50, 50, randColor))
 
     start_new_thread(threaded_client, (conn, currentPlayer))
     currentPlayer += 1

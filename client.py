@@ -27,17 +27,15 @@ def redraw_window(players, pickups):
 def main():
     run = True
     n = Network()
-    current_player = n.get_player()
-
-    all_players = [current_player]
     pickups = n.send("pickups")
 
     p = n.get_player()
+    all_players = [p]
 
-    while len(all_players) < 10:
-        p = n.get_player()
-        if p:
-            all_players.append(p)
+    # while len(all_players) < 10:
+    #     p = n.get_player()
+    #     if p:
+    #         all_players.append(p)
 
     while run:
 
@@ -56,13 +54,12 @@ def main():
         if keys[K_d]:
             p.move(2, 0)
 
-        current_player.update()
-        all_players = n.send(current_player)
+        p.update()
+        all_players = n.send(p)
 
         redraw_window(all_players, pickups)
 
 
-        redraw_window(all_players, pickups)
-        print(pickups)
+
 if __name__ == "__main__":
     main()
