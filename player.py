@@ -13,6 +13,7 @@ class Player:
 
         self.rect = Rect(self.x, self.y, self.width, self.height)
         self.velY = 0
+        self.score = 0
 
     def update(self):
         self.velY += 0.5

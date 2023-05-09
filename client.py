@@ -12,10 +12,14 @@ pygame.display.set_caption("Client")
 
 
 
-def redraw_window(players, current_player):
+def redraw_window(players, pickups):
     screen.fill((0, 0, 0))
     for player in players:
         player.draw(screen)
+
+    for pickup in pickups:
+        pickup.draw(screen)
+
     pygame.display.update()
     clock.tick(60)
 
@@ -26,6 +30,8 @@ def main():
     current_player = n.get_player()
 
     all_players = [current_player]
+    pickups = n.send("pickups")
+
     p = n.get_player()
 
     while len(all_players) < 10:
@@ -53,10 +59,10 @@ def main():
         current_player.update()
         all_players = n.send(current_player)
 
-        redraw_window(all_players, current_player)
+        redraw_window(all_players, pickups)
 
 
-        redraw_window(all_players, current_player)
-
+        redraw_window(all_players, pickups)
+        print(pickups)
 if __name__ == "__main__":
     main()
