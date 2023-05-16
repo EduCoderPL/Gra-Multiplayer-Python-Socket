@@ -30,12 +30,7 @@ def main():
     pickups = n.send("pickups")
 
     p = n.get_player()
-    all_players = [p]
 
-    # while len(all_players) < 10:
-    #     p = n.get_player()
-    #     if p:
-    #         all_players.append(p)
 
     while run:
 
@@ -55,6 +50,7 @@ def main():
             p.move(2, 0)
 
         p.update()
+        pickups = n.send("pickups")
         all_players = n.send(p)
 
         redraw_window(all_players, pickups)
