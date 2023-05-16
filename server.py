@@ -37,8 +37,8 @@ def server_logic():
 
             for bullet in bullets:
                 if players[playerNum].rect.colliderect(bullet.rect) and bullet.owner != players[playerNum]:
-                    players[playerNum].velX += bullet.velX
-                    players[playerNum].velY += bullet.velY
+                    players[playerNum].velX += 10 * bullet.velX
+                    players[playerNum].velY += 10 * bullet.velY
                     bullets.remove(bullet)
                     del bullet
 
