@@ -5,10 +5,22 @@ from _thread import *
 import sys
 import pygame.time
 
+from arena import Arena
 from player import Player
 from pickup import Pickup
 from bullet import Bullet
 from constants import *
+
+
+def check_collision(playerNum, bullets):
+    for bullet in bullets:
+        if players[playerNum].rect.colliderect(bullet.rect) and bullet.owner != players[playerNum]:
+            players[playerNum].velX += 10 * bullet.velX
+            players[playerNum].velY += 10 * bullet.velY
+            bullets.remove(bullet)
+            del bullet
+    return players[playerNum]
+
 
 def check_pickups(player_num, pickups):
     for pickup in pickups:
@@ -35,12 +47,7 @@ def server_logic():
         for playerNum in range(len(players)):
             check_pickups(playerNum, pickups)
 
-            for bullet in bullets:
-                if players[playerNum].rect.colliderect(bullet.rect) and bullet.owner != players[playerNum]:
-                    players[playerNum].velX += 10 * bullet.velX
-                    players[playerNum].velY += 10 * bullet.velY
-                    bullets.remove(bullet)
-                    del bullet
+
 
 
 
@@ -66,13 +73,13 @@ players = []
 pickups = []
 bullets = []
 scores = {}
+arena = Arena(-1000, -500, 2000, 1000)
 
 
-
-for i in range(10):
-    pickup_x = random.randint(0, 700)
-    pickup_y = random.randint(0, 500)
-    pickup_size = 20
+for i in range(40):
+    pickup_x = random.randint(arena.x, arena.x + arena.width)
+    pickup_y = random.randint(arena.y, arena.y + arena.height)
+    pickup_size = 10
     new_pickup = Pickup(pickup_x, pickup_y, pickup_size)
     pickups.append(new_pickup)
 
@@ -99,20 +106,30 @@ def threaded_client(conn, player_number):
 
             elif data == "bullets":
                 reply = bullets
+            elif data == "arena":
+                reply = arena
 
             elif isinstance(data, Player):
-                # Aktualizacja danych gracza na serwerze
                 players[player_number] = data
-                # Odeślij zaktualizowane dane gracza do klienta
+                # players[player_number] = check_collision(player_number, bullets)
                 reply = players
 
             elif isinstance(data, Bullet):
                 bullets.append(data)
                 # Odeślij zaktualizowane dane gracza do klienta
                 reply = bullets
+
+            elif data == "hitByBullet":
+                for bullet in bullets:
+                    if players[player_number].rect.colliderect(bullet.rect) and bullet.owner != players[player_number]:
+                        players[player_number].velX += 3 * bullet.velX
+                        players[player_number].velY += 3 * bullet.velY
+                        bullets.remove(bullet)
+                        del bullet
+                reply = players[player_number]
+
             else:
                 reply = ""
-
 
             conn.sendall(pickle.dumps(reply))
         except:

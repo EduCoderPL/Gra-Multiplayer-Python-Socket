@@ -1,3 +1,5 @@
+import time
+
 import pygame
 from pygame.locals import *
 from pygame.constants import *
@@ -16,15 +18,22 @@ class Bullet:
         self.velY = velY
 
         self.owner = owner
+        self.startLife = time.time()
+        self.lifeTime = 4
 
     def update(self):
         self.x += self.velX
         self.y += self.velY
 
         self.rect = Rect(self.x, self.y, self.width, self.height)
+        if time.time() - self.startLife > self.lifeTime:
+            del self
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+
+
+    def draw(self, screen, camera):
+        self.drawRect = Rect(self.x - camera.x, self.y - camera.y, self.width, self.height)
+        pygame.draw.rect(screen, self.color, self.drawRect)
 
     def move(self, x, y):
         self.velX += x

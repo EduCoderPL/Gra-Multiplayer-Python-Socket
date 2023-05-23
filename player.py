@@ -22,26 +22,14 @@ class Player:
         self.x += self.velX
         self.y += self.velY
 
-        if self.x < 0:
-            self.x = 0
-            self.velX = 0
-
-        if self.y < 0:
-            self.y = 0
-            self.velY = 0
-
-        if self.x > 800 - self.width:
-            self.x = 800 - self.height
-            self.velX = 0
-
-        if self.y > 600 - self.height:
-            self.y = 600 - self.height
-            self.velY = 0
+        self.velX *= 0.95
+        self.velY *= 0.95
 
         self.rect = Rect(self.x, self.y, self.width, self.height)
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+    def draw(self, screen, camera):
+        self.drawRect = Rect(self.x - camera.x, self.y - camera.y, self.width, self.height)
+        pygame.draw.rect(screen, self.color, self.drawRect)
 
     def move(self, x, y):
         self.velX += x
