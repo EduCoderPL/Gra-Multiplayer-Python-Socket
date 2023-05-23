@@ -15,8 +15,8 @@ from constants import *
 def check_collision(playerNum, bullets):
     for bullet in bullets:
         if players[playerNum].rect.colliderect(bullet.rect) and bullet.owner != players[playerNum]:
-            players[playerNum].velX += 10 * bullet.velX
-            players[playerNum].velY += 10 * bullet.velY
+            players[playerNum].velX += 4 * bullet.velX
+            players[playerNum].velY += 4 * bullet.velY
             bullets.remove(bullet)
             del bullet
     return players[playerNum]
@@ -43,6 +43,8 @@ def server_logic():
 
         for bullet in bullets:
             bullet.update()
+            if arena.check_collision(bullet):
+                bullets.remove(bullet)
 
         for playerNum in range(len(players)):
             check_pickups(playerNum, pickups)
@@ -111,22 +113,14 @@ def threaded_client(conn, player_number):
 
             elif isinstance(data, Player):
                 players[player_number] = data
-                # players[player_number] = check_collision(player_number, bullets)
                 reply = players
 
             elif isinstance(data, Bullet):
                 bullets.append(data)
-                # Odeślij zaktualizowane dane gracza do klienta
                 reply = bullets
 
             elif data == "hitByBullet":
-                for bullet in bullets:
-                    if players[player_number].rect.colliderect(bullet.rect) and bullet.owner != players[player_number]:
-                        players[player_number].velX += 3 * bullet.velX
-                        players[player_number].velY += 3 * bullet.velY
-                        bullets.remove(bullet)
-                        del bullet
-                reply = players[player_number]
+                reply = check_collision(player_number, bullets)
 
             else:
                 reply = ""

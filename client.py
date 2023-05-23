@@ -2,12 +2,12 @@ import pygame
 from pygame.locals import *
 from pygame.constants import *
 
-from OffsetManager import OffsetManager
+from offsetManager import OffsetManager
 from network import Network
 from bullet import Bullet
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -50,11 +50,14 @@ def main():
     p = n.get_player()
     all_players = [p]
     bullets = []
+
+
     p.update()
     mousePos = pygame.mouse.get_pos()
     centerOfPlayer = p.x + p.width / 2 - SCREEN_WIDTH, p.y + p.height / 2 - SCREEN_HEIGHT
     cameraPos = (mousePos[0] + centerOfPlayer[0]), (mousePos[1] + centerOfPlayer[1])
     camera.setOffset(cameraPos[0], cameraPos[1])
+    print(mousePos)
 
     while run:
 
@@ -65,13 +68,7 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 newX, newY = pygame.mouse.get_pos()
-
-                # Startowanie od środka gracza
-                mouseVector = newX + camera.x - (p.x + p.width/2), newY - (p.y + p.height/2) + camera.y
-                length = (mouseVector[0] ** 2 + mouseVector[1] ** 2) ** 0.5
-                normVector = mouseVector[0] / length, mouseVector[1] / length
-                velocity = 5
-                newBullet = Bullet(p.x + p.width/2, p.y + p.height/2, normVector[0] * velocity, normVector[1] * velocity, (255, 255, 255), p)
+                newBullet = make_bullet(camera, newX, newY, p)
                 bullets = n.send(newBullet)
 
         keys = pygame.key.get_pressed()
@@ -90,7 +87,6 @@ def main():
         centerOfPlayer = p.x + p.width / 2 - SCREEN_WIDTH, p.y + p.height / 2 - SCREEN_HEIGHT
         cameraPos = (mousePos[0] + centerOfPlayer[0]), (mousePos[1] + centerOfPlayer[1])
 
-
         camera.setOffset(cameraPos[0],  cameraPos[1])
         arena.check_collision(p)
         all_players = n.send(p)
@@ -101,6 +97,16 @@ def main():
 
         redraw_window(all_players, pickups, bullets, score, arena, camera)
 
+
+def make_bullet(camera,newX, newY, p):
+    # Startowanie od środka gracza
+    mouseVector = newX + camera.x - (p.x + p.width / 2), newY - (p.y + p.height / 2) + camera.y
+    length = (mouseVector[0] ** 2 + mouseVector[1] ** 2) ** 0.5
+    normVector = mouseVector[0] / length, mouseVector[1] / length
+    velocity = 14
+    newBullet = Bullet(p.x + p.width / 2, p.y + p.height / 2, normVector[0] * velocity, normVector[1] * velocity,
+                       (255, 255, 255), p)
+    return newBullet
 
 
 if __name__ == "__main__":
