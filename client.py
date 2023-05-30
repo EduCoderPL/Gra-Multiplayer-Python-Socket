@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from pygame.locals import *
 from pygame.constants import *
@@ -18,6 +20,9 @@ def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
 
+
+def get_info_about_closest_player(players):
+    return min([player.x + player.y for player in players])
 
 def redraw_window(players, pickups, bullets, score, arena, camera):
     screen.fill((100, 100, 100))
@@ -68,8 +73,12 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 newX, newY = pygame.mouse.get_pos()
-                newBullet = make_bullet(camera, newX, newY, p)
-                bullets = n.send(newBullet)
+                for i in range(5):
+                    randX = random.randint(-20, 20)
+                    randY = random.randint(-20, 20)
+                    newBullet = make_bullet(camera, newX + randX, newY + randY, p)
+
+                    bullets = n.send(newBullet)
 
         keys = pygame.key.get_pressed()
         if keys[K_w]:

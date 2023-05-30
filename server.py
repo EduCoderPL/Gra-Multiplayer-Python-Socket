@@ -94,7 +94,7 @@ def threaded_client(conn, player_number):
     while True:
         try:
             # Odczytanie danych od klienta
-            data = pickle.loads(conn.recv(2048))
+            data = pickle.loads(conn.recv(4096))
 
 
             # Sprawdzenie, czy odebrano jakieś dane
